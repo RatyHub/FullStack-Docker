@@ -1,0 +1,41 @@
+services:
+  # Service Mongo
+  mongo:
+    image: "mongo:6"  # ou mon-utilisateur/ma-base-mongo si vous avez besoin de votre image custom
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    # Env vars éventuellement
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    # depends_on permet de s'assurer que mongo est démarré avant le backend
+    # (même si ce n'est pas toujours garanti au niveau applicatif)
+  
+  # Service backend Python
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: python_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    # Variables d'environnement éventuelles
+    environment:
+      - MONGO_URI=mongodb://root:root@mongo:27017/?authSource=admin
+      # ou toute autre var
+
+  # Service frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
