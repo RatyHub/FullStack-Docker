@@ -1,5 +1,5 @@
 # Utiliser l’image Python 3
-FROM gisbertseb185/python:1.9
+FROM python:3.12-alpine
 
 # Créer et définir le dossier de travail
 WORKDIR /app
